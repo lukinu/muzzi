@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">muzzi</string>
+    <string name="info">"%1$d albums %2$d tracks"</string>
+    <string name="json_url">http://download.cdn.yandex.net/mobilization-2016/artists.json</string>
+</resources>

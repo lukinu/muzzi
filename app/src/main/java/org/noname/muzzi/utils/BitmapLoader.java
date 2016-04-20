@@ -1,5 +1,7 @@
 package org.noname.muzzi.utils;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -12,6 +14,7 @@ import android.util.LruCache;
 import android.widget.ImageView;
 
 import org.noname.muzzi.R;
+import org.noname.muzzi.model.RetainedBitmapCacheFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,7 +25,8 @@ import java.net.URL;
 
 public class BitmapLoader {
 
-    private static final String BMP_LDR = "BitmapLoader";
+    private static final String BMP_LDR_TAG = "bitmap_loader";
+    private static final String BMP_CACHE_TAG = "bitmap_cache_fragment";
     private LruCache<Integer, Bitmap> mMemoryCache;
     private Bitmap mPlaceHolderBitmap;
     private Context mContext;
@@ -31,20 +35,18 @@ public class BitmapLoader {
 
     public BitmapLoader(Context context) {
         this.mContext = context;
-        // Get max available VM memory, exceeding this amount will throw an
-        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
-        // int in its constructor.
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        // Use 1/8th of the available memory for this memory cache.
-        final int cacheSize = maxMemory / 8;
-        mMemoryCache = new LruCache<Integer, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(Integer key, Bitmap bitmap) {
-                // The cache size will be measured in kilobytes rather than
-                // number of items.
-                return bitmap.getByteCount() / 1024;
-            }
-        };
+        FragmentManager fragmentManager = ((Activity) mContext).getFragmentManager();
+        final RetainedBitmapCacheFragment retainedBitmapCacheFragment =
+                (RetainedBitmapCacheFragment) fragmentManager.findFragmentByTag(BMP_CACHE_TAG);
+        if (retainedBitmapCacheFragment != null) {
+            mMemoryCache = retainedBitmapCacheFragment.getMemoryCache();
+        } else {
+            final RetainedBitmapCacheFragment bitmapCacheFragment = new RetainedBitmapCacheFragment();
+            fragmentManager.beginTransaction()
+                    .add(bitmapCacheFragment, BMP_CACHE_TAG)
+                    .commit();
+            mMemoryCache = bitmapCacheFragment.getMemoryCache();
+        }
         mPlaceHolderBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_portrait_black_48dp);
     }
 
@@ -65,7 +67,7 @@ public class BitmapLoader {
         final Bitmap bitmap = getBitmapFromMemCache(imageKey);
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
-            Log.d(BMP_LDR, "Loaded bitmap from cache");
+            Log.d(BMP_LDR_TAG, "Loaded bitmap from cache");
         } else {
             if (cancelPotentialWork(imageUrl, imageView)) {
                 final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
@@ -132,7 +134,7 @@ public class BitmapLoader {
             mImageViewReference = new WeakReference<>(imageView);
         }
 
-        // Load and dcode image in background.
+        // Load and decode image in background.
         @Override
         protected Bitmap doInBackground(String... params) {
             // getting images from web

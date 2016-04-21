@@ -2,6 +2,7 @@ package org.noname.muzzi;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -26,13 +27,20 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-    private List<Artist> mArtists;
+    private static final String LIST_VIEW_STATE = "listview_state";
+    private List<Artist> mArtistsList;
     private ProgressBar mProgressBar;
+    private ListView mArtistsListView;
+    private Parcelable mViewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mArtistsListView = (ListView) findViewById(R.id.listViewArtists);
+        if (savedInstanceState != null) {
+            mViewState = savedInstanceState.getParcelable(LIST_VIEW_STATE);
+        }
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.title);
@@ -53,29 +61,38 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     private void loadArtistsList() {
-        mArtists = new ArrayList<>();
+        mArtistsList = new ArrayList<>();
         String dataSourceUrl = getString(R.string.json_url);
         new ArtistsJSONParser(dataSourceUrl).execute();
     }
 
     private void initArtistListView() {
-        ListView artistList = (ListView) findViewById(R.id.listViewArtists);
-        ArtistsListAdapter artistsListAdapter = new ArtistsListAdapter(this, R.layout.artist_list_item, mArtists);
-        artistList.setAdapter(artistsListAdapter);
-        artistList.setOnItemClickListener(this);
+        ArtistsListAdapter artistsListAdapter = new ArtistsListAdapter(this, R.layout.artist_list_item, mArtistsList);
+        mArtistsListView.setAdapter(artistsListAdapter);
+        mArtistsListView.setOnItemClickListener(this);
+        if (mViewState != null) {
+            mArtistsListView.onRestoreInstanceState(mViewState);
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(this, AboutArtistActivity.class);
-        intent.putExtra(AboutArtistActivity.NAME, mArtists.get(position).getName());
-        intent.putExtra(AboutArtistActivity.GENRE, mArtists.get(position).getGenres());
-        String info = mArtists.get(position).getAlbumsNum() + " albums " +
-                mArtists.get(position).getTrackNum() + " tracks";
+        intent.putExtra(AboutArtistActivity.NAME, mArtistsList.get(position).getName());
+        intent.putExtra(AboutArtistActivity.GENRE, mArtistsList.get(position).getGenres());
+        String info = mArtistsList.get(position).getAlbumsNum() + " albums " +
+                mArtistsList.get(position).getTrackNum() + " tracks";
         intent.putExtra(AboutArtistActivity.INFO, info);
-        intent.putExtra(AboutArtistActivity.BIO, mArtists.get(position).getBio());
-        intent.putExtra(AboutArtistActivity.IMAGE_LINK, mArtists.get(position).getBigImageLink());
+        intent.putExtra(AboutArtistActivity.BIO, mArtistsList.get(position).getBio());
+        intent.putExtra(AboutArtistActivity.IMAGE_LINK, mArtistsList.get(position).getBigImageLink());
         this.startActivity(intent);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        mViewState = mArtistsListView.onSaveInstanceState();
+        outState.putParcelable(LIST_VIEW_STATE, mViewState);
+        super.onSaveInstanceState(outState);
     }
 
     public class ArtistsJSONParser extends AsyncTask<Void, Integer, Boolean> {
@@ -156,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                 bigImageUrl = coverImages.getString(TAG_COVER_LINK_BIG);
                             }
                         }
-                        mArtists.add(new Artist(id, name, genres, smallImageUrl, bigImageUrl, albumsNum, tracksNum, descr));
+                        mArtistsList.add(new Artist(id, name, genres, smallImageUrl, bigImageUrl, albumsNum, tracksNum, descr));
                         publishProgress((i / mJSONArtists.length()) * 100);
                     }
                 } else {

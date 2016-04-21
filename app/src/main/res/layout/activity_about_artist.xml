@@ -37,27 +37,47 @@
 
             <ImageView
                 android:id="@+id/imageViewArtistLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="300dp"
-                android:layout_gravity="center" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:scaleType="centerCrop" />
 
             <TextView
                 android:id="@+id/textViewGenre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
                 android:text="Medium Text"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/primary_text_disabled_material_light" />
+                android:textColor="@color/primary_text_disabled_material_light"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
 
             <TextView
                 android:id="@+id/textViewInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
                 android:text="Medium Text"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/primary_text_disabled_material_light" />
+                android:textColor="@color/primary_text_disabled_material_light"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/bio"
+                android:id="@+id/textViewLabel"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:textSize="32dp" />
 
             <TextView
                 android:id="@+id/textViewBio"
@@ -65,10 +85,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="Medium Text"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/primary_text_default_material_light"
                 android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp" />
+                android:layout_marginRight="20dp"
+                android:textAppearance="@android:style/TextAppearance.Holo.Large"
+                android:textAlignment="viewStart"
+                android:lineSpacingExtra="15dp" />
         </LinearLayout>
     </ScrollView>
 

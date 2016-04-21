@@ -18,7 +18,7 @@ public class AboutArtistActivity extends AppCompatActivity {
     public static final String GENRE = "GENRE";
     public static final String INFO = "INFO";
     public static final String BIO = "BIO";
-    public static final String BIG_IMAGE_LINK = "BIG_IMAGE_LINK";
+    public static final String IMAGE_LINK = "IMAGE_LINK";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class AboutArtistActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Bitmap placeHolderBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_portrait_black_48dp);
         image.setImageBitmap(placeHolderBitmap);
-        App.mBitmapLoader.loadBitmap(intent.getStringExtra(BIG_IMAGE_LINK), image, 400, 400);
+        App.mBitmapLoader.loadBitmap(intent.getStringExtra(IMAGE_LINK), image, 400, 400);
     }
 
     @Override

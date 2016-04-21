@@ -12,16 +12,10 @@ import java.nio.charset.Charset;
 
 public class JSONLoader {
 
-    static InputStream inputStream = null;
-    static JSONArray jsonArray = null;
-    static String jsonString = "";
-
-    // constructor
-    public JSONLoader() {
-
-    }
-
     public JSONArray getJSONFromUrl(String urlString) {
+        JSONArray jsonArray = null;
+        String jsonString = "";
+        InputStream inputStream = null;
 
         // Making HTTP request
         HttpURLConnection urlConnection;
@@ -33,6 +27,7 @@ public class JSONLoader {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
         if (inputStream != null) {
             Charset cp1124 = Charset.forName("cp1124");
@@ -40,13 +35,14 @@ public class JSONLoader {
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
                         inputStream, cp1124), 8);
-                StringBuilder sb = new StringBuilder();
+                StringBuilder stringBuilder = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
+                    stringBuilder.append(line);
+                    stringBuilder.append("\n");
                 }
                 inputStream.close();
-                jsonString = sb.toString();
+                jsonString = stringBuilder.toString();
                 byte[] jsonStringBytes = jsonString.getBytes(cp1124);
                 jsonString = new String(jsonStringBytes, utf8);
             } catch (Exception e) {

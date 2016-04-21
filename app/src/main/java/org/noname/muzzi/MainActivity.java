@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,9 +34,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        App.mBitmapLoader = new BitmapLoader(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.title);
         setSupportActionBar(toolbar);
+        App.mBitmapLoader = new BitmapLoader(this);
 
         //Strict Mode for debugging
         try {
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             method_setThreadPolicy.invoke(null, laxPolicy);
         } catch (Exception e) {
         }
+
         loadArtistsList();
     }
 
@@ -71,11 +74,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 mArtists.get(position).getTrackNum() + " tracks";
         intent.putExtra(AboutArtistActivity.INFO, info);
         intent.putExtra(AboutArtistActivity.BIO, mArtists.get(position).getBio());
-        intent.putExtra(AboutArtistActivity.BIG_IMAGE_LINK, mArtists.get(position).getBigImageLink());
+        intent.putExtra(AboutArtistActivity.IMAGE_LINK, mArtists.get(position).getBigImageLink());
         this.startActivity(intent);
     }
 
-    public class ArtistsJSONParser extends AsyncTask<Void, Integer, Void> {
+    public class ArtistsJSONParser extends AsyncTask<Void, Integer, Boolean> {
 
         private static final String TAG_ID = "id";
         private static final String TAG_NAME = "name";
@@ -95,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
             try {
                 // Creating JSON Parser instance
                 JSONLoader jsonLoader = new JSONLoader();
@@ -103,62 +106,66 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 // getting JSON string from URL
                 mJSONArtists = jsonLoader.getJSONFromUrl(jsonUrl);
 
-                // looping through all artists
-                for (int i = 0; i < mJSONArtists.length(); i++) {
-                    JSONObject jsonArtist = mJSONArtists.getJSONObject(i);
+                if (mJSONArtists != null) {
+                    // looping through all artists in the array, adding them into list
+                    for (int i = 0; i < mJSONArtists.length(); i++) {
+                        JSONObject jsonArtist = mJSONArtists.getJSONObject(i);
 
-                    String id = null;
-                    String name = null;
-                    int tracksNum = 0;
-                    int albumsNum = 0;
-                    String descr = null;
-                    String smallImageUrl = null;
-                    String bigImageUrl = null;
-                    String genres = null;
-                    JSONObject coverImages;
-                    JSONArray jsonArrayGenres;
+                        String id = null;
+                        String name = null;
+                        int tracksNum = 0;
+                        int albumsNum = 0;
+                        String descr = null;
+                        String smallImageUrl = null;
+                        String bigImageUrl = null;
+                        String genres = null;
+                        JSONObject coverImages;
+                        JSONArray jsonArrayGenres;
 
-                    // Storing each json item in variable
-                    if (jsonArtist.has(TAG_ID)) {
-                        id = jsonArtist.getString(TAG_ID);
-                    }
-                    if (jsonArtist.has(TAG_NAME)) {
-                        name = jsonArtist.getString(TAG_NAME);
-                    }
-                    if (jsonArtist.has(TAG_TRACKS)) {
-                        tracksNum = Integer.parseInt(jsonArtist.getString(TAG_TRACKS));
-                    }
-                    if (jsonArtist.has(TAG_ALBUMS)) {
-                        albumsNum = Integer.parseInt(jsonArtist.getString(TAG_ALBUMS));
-                    }
-                    if (jsonArtist.has(TAG_DESC)) {
-                        descr = jsonArtist.getString(TAG_DESC);
-                    }
-                    if (jsonArtist.has(TAG_GENRES)) {
-                        jsonArrayGenres = jsonArtist.getJSONArray(TAG_GENRES);
-                        StringBuilder stringBuilder = new StringBuilder();
-                        for (int j = 0; j < jsonArrayGenres.length(); j++) {
-                            stringBuilder.append(jsonArrayGenres.getString(j));
-                            stringBuilder.append(" ");
+                        // Storing each json item in variable
+                        if (jsonArtist.has(TAG_ID)) {
+                            id = jsonArtist.getString(TAG_ID);
                         }
-                        genres = stringBuilder.toString();
-                    }
-                    if (jsonArtist.has(TAG_COVERS)) {
-                        coverImages = jsonArtist.getJSONObject(TAG_COVERS);
-                        if (coverImages.has(TAG_COVER_LINK_SMALL)) {
-                            smallImageUrl = coverImages.getString(TAG_COVER_LINK_SMALL);
+                        if (jsonArtist.has(TAG_NAME)) {
+                            name = jsonArtist.getString(TAG_NAME);
                         }
-                        if (coverImages.has(TAG_COVER_LINK_BIG)) {
-                            bigImageUrl = coverImages.getString(TAG_COVER_LINK_BIG);
+                        if (jsonArtist.has(TAG_TRACKS)) {
+                            tracksNum = Integer.parseInt(jsonArtist.getString(TAG_TRACKS));
                         }
+                        if (jsonArtist.has(TAG_ALBUMS)) {
+                            albumsNum = Integer.parseInt(jsonArtist.getString(TAG_ALBUMS));
+                        }
+                        if (jsonArtist.has(TAG_DESC)) {
+                            descr = jsonArtist.getString(TAG_DESC);
+                        }
+                        if (jsonArtist.has(TAG_GENRES)) {
+                            jsonArrayGenres = jsonArtist.getJSONArray(TAG_GENRES);
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (int j = 0; j < jsonArrayGenres.length(); j++) {
+                                stringBuilder.append(jsonArrayGenres.getString(j));
+                                stringBuilder.append(" ");
+                            }
+                            genres = stringBuilder.toString();
+                        }
+                        if (jsonArtist.has(TAG_COVERS)) {
+                            coverImages = jsonArtist.getJSONObject(TAG_COVERS);
+                            if (coverImages.has(TAG_COVER_LINK_SMALL)) {
+                                smallImageUrl = coverImages.getString(TAG_COVER_LINK_SMALL);
+                            }
+                            if (coverImages.has(TAG_COVER_LINK_BIG)) {
+                                bigImageUrl = coverImages.getString(TAG_COVER_LINK_BIG);
+                            }
+                        }
+                        mArtists.add(new Artist(id, name, genres, smallImageUrl, bigImageUrl, albumsNum, tracksNum, descr));
+                        publishProgress((i / mJSONArtists.length()) * 100);
                     }
-                    mArtists.add(new Artist(id, name, genres, smallImageUrl, bigImageUrl, albumsNum, tracksNum, descr));
-                    publishProgress((i / mJSONArtists.length()) * 100);
+                } else {
+                    return false;
                 }
             } catch (JSONException e) {
                 Log.e("json exception ", e.toString());
             }
-            return null;
+            return true;
         }
 
         @Override
@@ -168,10 +175,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(Boolean isSuccess) {
             mProgressBar.setVisibility(View.GONE);
-            initArtistListView();
+            super.onPostExecute(isSuccess);
+            if (isSuccess) {
+                initArtistListView();
+            } else {
+                Toast.makeText(getApplicationContext(), getString(R.string.net_error), Toast.LENGTH_LONG).show();
+            }
         }
 
         @Override

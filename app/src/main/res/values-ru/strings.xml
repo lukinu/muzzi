@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info">"%1$d альбомов %2$d песен"</string>
+    <string name="title">Исполнители</string>
+    <string name="net_error">Похоже, что сети нет. Попробуйте позднее снова</string>
+    <string name="bio" type="id">Биография</string>
+</resources>

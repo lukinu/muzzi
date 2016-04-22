@@ -12,8 +12,12 @@ import android.widget.TextView;
 
 import org.noname.muzzi.model.App;
 
+/*
+*   An activity class to represent artist's detailed view
+*
+* */
 public class AboutArtistActivity extends AppCompatActivity {
-
+    // constant keys to get data from Intent
     public static final String NAME = "NAME";
     public static final String GENRE = "GENRE";
     public static final String INFO = "INFO";
@@ -22,12 +26,14 @@ public class AboutArtistActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // initialize UI basics:
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_artist);
         ImageView image = (ImageView) findViewById(R.id.imageViewArtistLarge);
         TextView genre = (TextView) findViewById(R.id.textViewGenre);
         TextView info = (TextView) findViewById(R.id.textViewInfo);
         TextView bio = (TextView) findViewById(R.id.textViewBio);
+        // get the Intent and process its data
         Intent intent = this.getIntent();
         genre.setText(intent.getStringExtra(GENRE));
         info.setText(intent.getStringExtra(INFO));
@@ -39,9 +45,12 @@ public class AboutArtistActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         Bitmap placeHolderBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_portrait_black_48dp);
         image.setImageBitmap(placeHolderBitmap);
-        App.mBitmapLoader.loadBitmap(intent.getStringExtra(IMAGE_LINK), image, 400, 400);
+        // ask BitmapLoader to load image by URI from the Intent.
+        App.mBitmapLoader.loadBitmap(intent.getStringExtra(IMAGE_LINK), image, 400, 400); //todo: scaling is wrong
+        // todo: use cropped upper rectangle of an original image for better view
     }
 
+    // back button at the toolbar
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {

@@ -5,6 +5,12 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.LruCache;
 
+/*
+*   A class responsible for storing objects
+*   that must survive Activity re-creation,
+*   namely, image cache object.
+*
+* */
 public class RetainedBitmapCacheFragment extends Fragment {
     private final LruCache<Integer, Bitmap> mMemoryCache;
 
@@ -25,12 +31,14 @@ public class RetainedBitmapCacheFragment extends Fragment {
         };
     }
 
+    // set it as a RetainInstance
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
 
+    // getter to access cache object
     public LruCache<Integer, Bitmap> getMemoryCache() {
         return mMemoryCache;
     }

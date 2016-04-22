@@ -23,6 +23,11 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/*
+*   A class responsible for providing Bitmap images to a specified Views.
+*   Image is specified as URL and can be either recalled from the image cache,
+*   or downloaded from Internet.
+* */
 public class BitmapLoader {
 
     private static final String BMP_LDR_TAG = "bitmap_loader";
@@ -33,8 +38,10 @@ public class BitmapLoader {
     int x = 0;
     int y = 0;
 
+    // The constructor gets Context as a parameter cause we've chosen to let it operate on Views directly
     public BitmapLoader(Context context) {
         this.mContext = context;
+        // get RetainedFragment, storing our image cache, or create it newly
         FragmentManager fragmentManager = ((Activity) mContext).getFragmentManager();
         final RetainedBitmapCacheFragment retainedBitmapCacheFragment =
                 (RetainedBitmapCacheFragment) fragmentManager.findFragmentByTag(BMP_CACHE_TAG);
@@ -47,19 +54,23 @@ public class BitmapLoader {
                     .commit();
             mMemoryCache = bitmapCacheFragment.getMemoryCache();
         }
+        // assign a dumb image
         mPlaceHolderBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_portrait_black_48dp);
     }
 
+    // puts image into cache
     public void addBitmapToMemoryCache(Integer key, Bitmap bitmap) {
         if (getBitmapFromMemCache(key) == null) {
             mMemoryCache.put(key, bitmap);
         }
     }
 
+    // gets image from cache by key
     public Bitmap getBitmapFromMemCache(Integer key) {
         return mMemoryCache.get(key);
     }
 
+    // tries to find image in cache and set it into View. If not found - runs async download task
     public void loadBitmap(String imageUrl, ImageView imageView, int x, int y) {
         this.x = x;
         this.y = y;
@@ -69,8 +80,10 @@ public class BitmapLoader {
             imageView.setImageBitmap(bitmap);
             Log.d(BMP_LDR_TAG, "Loaded bitmap from cache");
         } else {
+            // check if the image isn't already been downloaded
             if (cancelPotentialWork(imageUrl, imageView)) {
                 final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+                // set drawable to View and start async downloading task
                 final AsyncDrawable asyncDrawable =
                         new AsyncDrawable(mContext.getResources(), mPlaceHolderBitmap, task);
                 imageView.setImageDrawable(asyncDrawable);
@@ -80,6 +93,10 @@ public class BitmapLoader {
         }
     }
 
+    /*
+    *   A class to hold a weak reference to a loader task
+    *   to let GC deal with it later
+    * */
     static class AsyncDrawable extends BitmapDrawable {
         private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
 
@@ -95,6 +112,7 @@ public class BitmapLoader {
         }
     }
 
+    // check if the same downloading is already going on
     public static boolean cancelPotentialWork(String url, ImageView imageView) {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
@@ -112,6 +130,7 @@ public class BitmapLoader {
         return true;
     }
 
+    // get loading tasks's reference from its associated View
     private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
         if (imageView != null) {
             final Drawable drawable = imageView.getDrawable();
@@ -123,6 +142,9 @@ public class BitmapLoader {
         return null;
     }
 
+    /*
+    *   Async task class to do the job of getting image from Internet
+    * */
     public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
 
         private static final int IO_BUFFER_SIZE = 0xFFFF;
@@ -150,6 +172,7 @@ public class BitmapLoader {
                 e.printStackTrace();
             }
             if (inputStream != null) {
+                // get image from the stream and scale it appropriately
                 try {
                     bitmap = decodeSampledBitmapFromStream(inputStream, x, y);
                 } catch (Exception e) {
@@ -166,6 +189,7 @@ public class BitmapLoader {
             return bitmap;
         }
 
+        // scale the image from stream
         public Bitmap decodeSampledBitmapFromStream(InputStream inputStream,
                                                     int reqWidth, int reqHeight) {
             // First decode with inJustDecodeBounds=true to check dimensions
@@ -188,6 +212,7 @@ public class BitmapLoader {
             return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
         }
 
+        //  read stream to a byte array
         public byte[] getBytesFromInputStream(InputStream is) throws IOException {
             try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
                 byte[] bytes = new byte[IO_BUFFER_SIZE];
@@ -197,6 +222,7 @@ public class BitmapLoader {
             }
         }
 
+        // calculate scaling ratio
         public int calculateInSampleSize(
                 BitmapFactory.Options options, int reqWidth, int reqHeight) {
             // Raw height and width of image
@@ -219,11 +245,13 @@ public class BitmapLoader {
             return inSampleSize;
         }
 
+        // set image to View finally
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (mImageViewReference != null && bitmap != null) {
                 final ImageView imageView = mImageViewReference.get();
                 if (imageView != null) {
+                    // dont' forget to put it into cache for future use
                     addBitmapToMemoryCache((Integer) imageView.getTag(), bitmap);
                     imageView.setImageBitmap(bitmap);
                 }

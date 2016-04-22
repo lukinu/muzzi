@@ -13,13 +13,18 @@ import org.noname.muzzi.model.Artist;
 
 import java.util.List;
 
+/*
+*   A ListView adapter class, Nothing else
+*
+* */
 public class ArtistsListAdapter extends ArrayAdapter<Artist> {
-
+    // class fields
     private Context mContext;
     private int mElementLayoutId;
     private List<Artist> mArtistsList;
     private LayoutInflater mLayoutInflater;
 
+    // get all the necessary data on adapter instantiation
     public ArtistsListAdapter(Context context, int elementLayoutId, List<Artist> objects) {
         super(context, elementLayoutId, objects);
         this.mContext = context;
@@ -44,6 +49,7 @@ public class ArtistsListAdapter extends ArrayAdapter<Artist> {
         genre.setText(artist.getGenres());
         info.setText(String.format(mContext.getResources().getString(R.string.info),
                 artist.getAlbumsNum(), artist.getTrackNum()));
+        // ask BitmapLoader to load image by URI from the Intent.
         App.mBitmapLoader.loadBitmap(artist.getSmallImageLink(), image, 200, 200);
         return convertView;
     }

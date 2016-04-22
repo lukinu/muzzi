@@ -10,14 +10,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+/*
+*   A class responsible for JSON object loading from URI.
+*   Parses data into JSON objects array
+*
+* */
 public class JSONLoader {
 
+    // the only method, gets the job done
     public JSONArray getJSONFromUrl(String urlString) {
         JSONArray jsonArray = null;
         String jsonString = "";
         InputStream inputStream = null;
 
-        // Making HTTP request
+        // doing HTTP request
         HttpURLConnection urlConnection;
         try {
             URL url = new URL(urlString);
@@ -29,6 +35,7 @@ public class JSONLoader {
             e.printStackTrace();
             return null;
         }
+        // read data from stream
         if (inputStream != null) {
             Charset cp1124 = Charset.forName("cp1124");
             Charset utf8 = Charset.forName("UTF-8");
@@ -49,7 +56,7 @@ public class JSONLoader {
                 Log.e("Buffer Error", "Error converting result " + e.toString());
             }
         }
-        // try parse the string to a JSON object
+        // try to parse the string to a JSON object
         try {
             jsonArray = new JSONArray(jsonString);
         } catch (JSONException e) {

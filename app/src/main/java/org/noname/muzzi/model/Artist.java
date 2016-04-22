@@ -1,7 +1,12 @@
 package org.noname.muzzi.model;
 
+/*
+*   A class representing our object - an Artist
+*
+* */
 public class Artist {
 
+    // field variables
     String mId;
     private String mName;
     private String mGenres;
@@ -11,6 +16,7 @@ public class Artist {
     private int mTrackNum;
     private String mBio;
 
+    // that's how will we instantiate our Artist
     public Artist(String id, String name, String genres, String smallImageLink, String bigImageLink,
                   int albumsNum, int tracksNum, String bio) {
         this.mId = id;
@@ -23,6 +29,7 @@ public class Artist {
         this.mBio = bio;
     }
 
+    // some getters-setters, more or or less usefull
     public String getName() {
         return mName;
     }

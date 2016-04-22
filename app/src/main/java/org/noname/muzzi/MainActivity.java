@@ -1,5 +1,6 @@
 package org.noname.muzzi;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Parcelable;
@@ -36,18 +37,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // setup UI basics:
         setContentView(R.layout.activity_main);
+        // main ListView showing artists list
         mArtistsListView = (ListView) findViewById(R.id.listViewArtists);
+        // restore ListView's state if not the first start of activity
         if (savedInstanceState != null) {
             mViewState = savedInstanceState.getParcelable(LIST_VIEW_STATE);
         }
+        // progress bar to animate data loading process
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        // use Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.title);
         setSupportActionBar(toolbar);
+        // instantiate a class responsible for async image loading and processing
         App.mBitmapLoader = new BitmapLoader(this);
 
-        //Strict Mode for debugging
+        //Strict Mode, just for debugging
         try {
             Class strictModeClass = Class.forName("android.os.StrictMode");
             Class strictModeThreadPolicyClass = Class.forName("android.os.StrictMode$ThreadPolicy");
@@ -56,16 +63,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             method_setThreadPolicy.invoke(null, laxPolicy);
         } catch (Exception e) {
         }
-
+        // begin load data to UI
         loadArtistsList();
     }
 
+    // async load JSON data
     private void loadArtistsList() {
         mArtistsList = new ArrayList<>();
         String dataSourceUrl = getString(R.string.json_url);
         new ArtistsJSONParser(dataSourceUrl).execute();
     }
 
+    // initialize ListView
     private void initArtistListView() {
         ArtistsListAdapter artistsListAdapter = new ArtistsListAdapter(this, R.layout.artist_list_item, mArtistsList);
         mArtistsListView.setAdapter(artistsListAdapter);
@@ -75,8 +84,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    // on ListView item click start new activity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // instantiate new Intent, put needed data there
         Intent intent = new Intent(this, AboutArtistActivity.class);
         intent.putExtra(AboutArtistActivity.NAME, mArtistsList.get(position).getName());
         intent.putExtra(AboutArtistActivity.GENRE, mArtistsList.get(position).getGenres());
@@ -84,10 +95,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 mArtistsList.get(position).getTrackNum() + " tracks";
         intent.putExtra(AboutArtistActivity.INFO, info);
         intent.putExtra(AboutArtistActivity.BIO, mArtistsList.get(position).getBio());
-        intent.putExtra(AboutArtistActivity.IMAGE_LINK, mArtistsList.get(position).getBigImageLink());
-        this.startActivity(intent);
+        intent.putExtra(AboutArtistActivity.IMAGE_LINK, mArtistsList.get(position).getSmallImageLink());
+        // add some activity transition animations
+        Bundle animationOptions = ActivityOptions.
+                makeCustomAnimation(this, R.anim.slide_in, R.anim.slide_out).toBundle();
+        this.startActivity(intent, animationOptions);
     }
 
+    // save ListView's state on configuration changes
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         mViewState = mArtistsListView.onSaveInstanceState();
@@ -95,6 +110,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         super.onSaveInstanceState(outState);
     }
 
+    /*
+    *  A class responsible for async loading of JSON objects,
+    *  for parsing them and storing into the inner List
+    */
     public class ArtistsJSONParser extends AsyncTask<Void, Integer, Boolean> {
 
         private static final String TAG_ID = "id";
@@ -117,17 +136,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                // Creating JSON Parser instance
+                // Creating JSON Loader instance
                 JSONLoader jsonLoader = new JSONLoader();
 
-                // getting JSON string from URL
+                // getting JSON by URL as an array
                 mJSONArtists = jsonLoader.getJSONFromUrl(jsonUrl);
 
                 if (mJSONArtists != null) {
-                    // looping through all artists in the array, adding them into list
+                    // looping through all the artists in the JSON array, adding them into List
                     for (int i = 0; i < mJSONArtists.length(); i++) {
                         JSONObject jsonArtist = mJSONArtists.getJSONObject(i);
-
+                        // declare artist's data variables
                         String id = null;
                         String name = null;
                         int tracksNum = 0;
@@ -173,7 +192,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                 bigImageUrl = coverImages.getString(TAG_COVER_LINK_BIG);
                             }
                         }
+                        // instantiate a new Artist, store it into List
                         mArtistsList.add(new Artist(id, name, genres, smallImageUrl, bigImageUrl, albumsNum, tracksNum, descr));
+                        // don't forget to publish our work progress
                         publishProgress((i / mJSONArtists.length()) * 100);
                     }
                 } else {
@@ -185,23 +206,29 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             return true;
         }
 
+        // roll the progress bar
         @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             mProgressBar.setProgress(values[0]);
         }
 
+        // get results and begin to initialize ListView with all the data
         @Override
         protected void onPostExecute(Boolean isSuccess) {
             mProgressBar.setVisibility(View.GONE);
             super.onPostExecute(isSuccess);
+            // if some data have been retrieved
             if (isSuccess) {
                 initArtistListView();
-            } else {
+            }
+            // or if a network error occurred in getting data
+            else {
                 Toast.makeText(getApplicationContext(), getString(R.string.net_error), Toast.LENGTH_LONG).show();
             }
         }
 
+        // show our progressbar first
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

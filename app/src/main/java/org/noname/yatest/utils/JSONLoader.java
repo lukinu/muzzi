@@ -1,4 +1,4 @@
-package org.noname.muzzi.utils;
+package org.noname.yatest.utils;
 
 import android.util.Log;
 

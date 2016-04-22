@@ -1,4 +1,4 @@
-package org.noname.muzzi.utils;
+package org.noname.yatest.utils;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -13,8 +13,8 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
-import org.noname.muzzi.R;
-import org.noname.muzzi.model.RetainedBitmapCacheFragment;
+import org.noname.yatest.R;
+import org.noname.yatest.model.RetainedBitmapCacheFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

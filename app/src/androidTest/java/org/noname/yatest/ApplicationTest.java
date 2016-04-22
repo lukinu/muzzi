@@ -1,4 +1,4 @@
-package org.noname.muzzi;
+package org.noname.yatest;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,4 +1,4 @@
-package org.noname.muzzi;
+package org.noname.yatest;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -17,10 +17,10 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.noname.muzzi.model.App;
-import org.noname.muzzi.model.Artist;
-import org.noname.muzzi.utils.BitmapLoader;
-import org.noname.muzzi.utils.JSONLoader;
+import org.noname.yatest.model.App;
+import org.noname.yatest.model.Artist;
+import org.noname.yatest.utils.BitmapLoader;
+import org.noname.yatest.utils.JSONLoader;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

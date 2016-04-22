@@ -1,9 +1,9 @@
-package org.noname.muzzi.model;
+package org.noname.yatest.model;
 
 import android.app.Application;
 import android.util.Log;
 
-import org.noname.muzzi.utils.BitmapLoader;
+import org.noname.yatest.utils.BitmapLoader;
 
 /*
 *   A class to store some static variables,

@@ -1,4 +1,4 @@
-package org.noname.muzzi;
+package org.noname.yatest;
 
 import org.junit.Test;
 

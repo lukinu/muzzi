@@ -1,4 +1,4 @@
-package org.noname.muzzi.model;
+package org.noname.yatest.model;
 
 /*
 *   A class representing our object - an Artist

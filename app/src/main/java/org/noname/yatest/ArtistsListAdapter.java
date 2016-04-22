@@ -1,4 +1,4 @@
-package org.noname.muzzi;
+package org.noname.yatest;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,8 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.noname.muzzi.model.App;
-import org.noname.muzzi.model.Artist;
+import org.noname.yatest.model.App;
+import org.noname.yatest.model.Artist;
 
 import java.util.List;
 

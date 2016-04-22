@@ -1,4 +1,4 @@
-package org.noname.muzzi.model;
+package org.noname.yatest.model;
 
 import android.app.Fragment;
 import android.graphics.Bitmap;

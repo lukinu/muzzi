@@ -1,4 +1,4 @@
-package org.noname.muzzi;
+package org.noname.yatest;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.noname.muzzi.model.App;
+import org.noname.yatest.model.App;
 
 /*
 *   An activity class to represent artist's detailed view

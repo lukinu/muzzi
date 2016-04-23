@@ -40,56 +40,56 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:layout_gravity="top|center_horizontal"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="8dp"
                 android:scaleType="centerCrop" />
 
             <TextView
                 android:id="@+id/textViewGenre"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
                 android:text="Medium Text"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/primary_text_disabled_material_light"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp" />
+                android:textColor="@color/primary_text_disabled_material_light" />
 
             <TextView
                 android:id="@+id/textViewInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
                 android:text="Medium Text"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/primary_text_disabled_material_light"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp" />
+                android:textColor="@color/primary_text_disabled_material_light" />
 
             <TextView
+                android:id="@+id/textViewLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
                 android:text="@string/bio"
-                android:id="@+id/textViewLabel"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
-                android:textSize="32dp" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="32sp" />
 
             <TextView
                 android:id="@+id/textViewBio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginRight="24dp"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="16dp"
                 android:text="Medium Text"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:textAppearance="@android:style/TextAppearance.Holo.Large"
                 android:textAlignment="viewStart"
-                android:lineSpacingExtra="15dp" />
+                android:textAppearance="@android:style/TextAppearance.Holo.Large" />
         </LinearLayout>
     </ScrollView>
 
